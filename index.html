@@ -748,6 +748,130 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+        // Optimized JavaScript for Google Form Performance
+document.addEventListener('DOMContentLoaded', function() {
+    const googleForm = document.getElementById('googleForm');
+    const formContainer = document.querySelector('.form-container');
+    
+    // Optimize iframe loading
+    if (googleForm) {
+        // Add loading attribute to improve performance
+        googleForm.loading = 'lazy';
+        
+        // Fix scroll lag by debouncing scroll events
+        let scrollTimeout;
+        googleForm.addEventListener('scroll', function() {
+            if (!scrollTimeout) {
+                scrollTimeout = setTimeout(function() {
+                    scrollTimeout = null;
+                }, 100);
+            }
+        });
+        
+        // Detect when form is loaded
+        googleForm.addEventListener('load', function() {
+            console.log('Google Form loaded successfully');
+            
+            // Add a class to indicate the form is loaded
+            formContainer.classList.add('form-loaded');
+            
+            // Force hardware acceleration for smoother scrolling
+            googleForm.style.transform = 'translateZ(0)';
+            
+            // Fix for iOS scrolling
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                googleForm.style.webkitOverflowScrolling = 'touch';
+            }
+        });
+        
+        // Adjust height based on content if possible
+        function adjustHeight() {
+            try {
+                // Attempt to adjust iframe height based on content
+                const height = googleForm.contentWindow.document.body.scrollHeight;
+                if (height > 300) {
+                    googleForm.style.height = height + 'px';
+                }
+            } catch (e) {
+                // Cross-origin restrictions might prevent this
+                console.log('Cannot adjust iframe height due to cross-origin policy');
+            }
+        }
+        
+        // Try to adjust height after load
+        googleForm.addEventListener('load', function() {
+            setTimeout(adjustHeight, 1000);
+        });
+        
+        // Responsive height adjustment
+        function setResponsiveHeight() {
+            const viewportWidth = window.innerWidth;
+            const formWrapper = document.querySelector('.google-form-wrapper');
+            
+            if (!formWrapper) return;
+            
+            // Adjust height based on viewport width
+            if (viewportWidth <= 380) {
+                formWrapper.style.height = '850px';
+            } else if (viewportWidth <= 576) {
+                formWrapper.style.height = '800px';
+            } else if (viewportWidth <= 768) {
+                formWrapper.style.height = '750px';
+            } else if (viewportWidth <= 992) {
+                formWrapper.style.height = '700px';
+            } else if (viewportWidth <= 1200) {
+                formWrapper.style.height = '650px';
+            } else {
+                formWrapper.style.height = '600px';
+            }
+        }
+        
+        // Set initial height
+        setResponsiveHeight();
+        
+        // Update height on resize
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(setResponsiveHeight, 100);
+        });
+    }
+    
+    // Simple 3D hover effect with optimized performance
+    if (formContainer && window.matchMedia('(min-width: 992px)').matches) {
+        let ticking = false;
+        
+        formContainer.addEventListener('mousemove', function(e) {
+            if (!ticking) {
+                window.requestAnimationFrame(function() {
+                    handleMouseMove(e);
+                    ticking = false;
+                });
+                
+                ticking = true;
+            }
+        });
+        
+        function handleMouseMove(e) {
+            const rect = formContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            // Reduced effect for better performance
+            const angleY = (x - centerX) / 50;
+            const angleX = (centerY - y) / 50;
+            
+            formContainer.style.transform = `translateY(-5px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+        }
+        
+        formContainer.addEventListener('mouseleave', function() {
+            formContainer.style.transform = 'translateY(-5px) rotateX(0) rotateY(0)';
+        });
+    }
+});
     </script>
 </body>
 </html>
